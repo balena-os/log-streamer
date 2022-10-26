@@ -1,34 +1,25 @@
 import * as https from 'https';
 import { promisify } from 'util';
-import * as url from 'url';
 import * as zlib from 'zlib';
-import * as stream from 'stream';
-import * as pThrottle from 'p-throttle';
+import { pipeline } from 'stream';
 
 export type LogMessage = { [key: string | number | symbol]: any };
 
 export type Logger = (message: LogMessage) => void;
 
-export class LoggerError extends Error { }
+export class LoggerError extends Error {}
 
-const ZLIB_TIMEOUT = 100;
-const MAX_PENDING_BYTES = 256 * 1024;
 const RESPONSE_GRACE_PERIOD = 5 * 1000;
+const REQUEST_TIMEOUT = 59 * 1000;
 
 const sleep = promisify(setTimeout);
-export async function Logger(
-	endpoint: string,
-	secret: string,
-): Promise<Logger> {
-	const throttle = pThrottle({ limit: 1, interval: ZLIB_TIMEOUT });
-
+export async function Logger(url: string, secret: string): Promise<Logger> {
 	return new Promise(async (resolve, reject) => {
-		const req = https.request({
-			...url.parse(endpoint),
+		const req = https.request(url, {
 			method: 'POST',
+			timeout: REQUEST_TIMEOUT,
 			headers: {
 				Authorization: `Bearer ${secret}`,
-
 				'Content-Type': 'application/x-ndjson',
 				'Content-Encoding': 'gzip',
 			},
@@ -38,6 +29,7 @@ export async function Logger(
 		// only reason for the server to prematurely respond is to
 		// communicate an error. So teardown the connection immediately
 		req.on('response', (res) => {
+			console.error('Received response', res.statusCode);
 			reject(
 				new LoggerError(
 					`Received response from log backend with status code: ${res.statusCode}`,
@@ -45,6 +37,7 @@ export async function Logger(
 			);
 		});
 		req.on('timeout', () => {
+			console.error('Request timed out');
 			reject(
 				new LoggerError(
 					`Request timed out when trying to connect to the log backend`,
@@ -52,11 +45,13 @@ export async function Logger(
 			);
 		});
 		req.on('close', () => {
+			console.error('Request closed');
 			reject(
 				new LoggerError(`Request to the log backend terminated prematurely`),
 			);
 		});
 		req.on('error', (cause) => {
+			console.error('Request error', cause);
 			reject(
 				new LoggerError(`Request to the log backend terminated prematurely`, {
 					cause,
@@ -68,48 +63,28 @@ export async function Logger(
 		// respond with potential errors such as 401 authentication error
 		req.flushHeaders();
 
-		// We want a very low writable high watermark to prevent having many
-		// chunks stored in the writable queue of @_gzip and have them in
-		// @_stream instead. This is desirable because once @_gzip.flush() is
-		// called it will do all pending writes with that flush flag. This is
-		// not what we want though. If there are 100 items in the queue we want
-		// to write all of them with Z_NO_FLUSH and only afterwards do a
-		// Z_SYNC_FLUSH to maximize compression
-		const gzip = zlib.createGzip();
-		gzip.on('error', (cause) => {
-			gzip.end();
-			reject(new LoggerError(`Failed to create gzip stream`, { cause }));
+		const gzip = zlib.createGzip({
+			flush: zlib.constants.Z_SYNC_FLUSH,
+			chunkSize: 1024,
 		});
-		gzip.pipe(req);
 
-		// This stream serves serves as a message buffer during reconnections
-		// while we unpipe the old, malfunctioning connection and then repipe a
-		// new one.
-		const log = new stream.PassThrough({
-			allowHalfOpen: true,
-
-			// We halve the high watermark because a passthrough stream has two
-			// buffers, one for the writable and one for the readable side. The
-			// write() call only returns false when both buffers are full.
-			highWaterMark: MAX_PENDING_BYTES / 2,
+		pipeline(gzip, req, (cause) => {
+			if (cause) {
+				req.end();
+				console.error('Gzip error', cause);
+				reject(new LoggerError(`Failed to create gzip stream`, { cause }));
+			}
 		});
 
 		let writable = true;
 		let dropCount = 0;
 
-		// Flushing every ZLIB_TIMEOUT hits a balance between compression and
-		// latency. When ZLIB_TIMEOUT is 0 the compression ratio is around 5x
-		// whereas when ZLIB_TIMEOUT is infinity the compession ratio is around 10x.
-		const flush = throttle(() => {
-			gzip.flush(zlib.constants.Z_SYNC_FLUSH);
-		});
-
 		const write = (msg: LogMessage) => {
 			if (writable) {
 				try {
 					// the line end is necessary for ndjson
-					writable = log.write(JSON.stringify(msg) + '\n');
-					flush();
+					writable = gzip.write(JSON.stringify(msg) + '\n');
+					gzip.flush();
 				} catch (e: any) {
 					console.error(
 						'Failed to write to logging stream, dropping message',
@@ -121,9 +96,8 @@ export async function Logger(
 			}
 		};
 
-		log.on('drain', () => {
+		gzip.on('drain', () => {
 			writable = true;
-			flush();
 			if (dropCount > 0) {
 				write({
 					message: `Warning: Suppressed ${dropCount} message(s) due to high load`,
@@ -133,6 +107,7 @@ export async function Logger(
 				});
 				dropCount = 0;
 			}
+			gzip.flush();
 		});
 
 		// Only start piping if there has been no error after the header flush.
@@ -141,9 +116,6 @@ export async function Logger(
 		// passthrough buffer
 		await sleep(RESPONSE_GRACE_PERIOD);
 
-		// Pipe log output to gzip
-		log.pipe(gzip);
-
 		// Return the write function
 		resolve(write);
 	});
@@ -151,11 +123,11 @@ export async function Logger(
 
 const WAIT = parseInt(process.env.WAIT || '1000', 10);
 
-const UUID = 'ed14dae57b050cf3caa99ebe4cedcbbe';
+const UUID = '43aebb844b9240f6b8702ecadb846f81';
 const SECRET = 'mysecret';
 const BACKEND = 'https://api.balena-staging.com';
 // const UUID = '112d2bcc8bb14ee3bec5e76874eef091';
-// const SECRET = 'my secret';
+// const SECRET = 'mysecret';
 // const BACKEND = 'https://api.balena-cloud.com';
 const LOG_STREAM = `${BACKEND}/device/v2/${UUID}/log-stream`;
 (async () => {
