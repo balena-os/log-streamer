@@ -22,7 +22,7 @@
 		"build/"
 	],
 	"scripts": {
-		"dev": "nodemon -w lib/* lib/index.ts",
+		"dev": "nodemon -w lib/ lib/index.ts",
 		"clean": "rimraf build",
 		"build": "npm run clean && tsc",
 		"lint": "balena-lint --typescript lib tests",
@@ -52,6 +52,6 @@
 		"publishedAt": "2022-07-20T21:31:17.871Z"
 	},
 	"dependencies": {
-		"p-throttle": "^4.1.1"
+		"got": "^11.8.5"
 	}
 }
