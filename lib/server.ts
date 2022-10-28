@@ -13,12 +13,10 @@ app.post('/device/v2/:uuid/log-stream', async (req, res) => {
 		}
 	});
 
-	const uint8 = new Uint8Array(1);
-	uint8[0] = 1;
 	await sleep(5 * 1000);
 	while (!req.closed) {
-		// write a single number every 10 seconds
-		res.write(uint8);
+		// write a single byte every 10 seconds
+		res.write(Buffer.alloc(1, 1));
 		await sleep(10 * 1000);
 	}
 });

@@ -15,16 +15,22 @@ const REQUEST_TIMEOUT = 59 * 1000;
 const sleep = promisify(setTimeout);
 export async function Logger(url: string, secret: string): Promise<Logger> {
 	return new Promise(async (resolve, reject) => {
-		const req = https.request(url, {
-			method: 'POST',
-			timeout: REQUEST_TIMEOUT,
-			agent: false,
-			headers: {
-				Authorization: `Bearer ${secret}`,
-				'Content-Type': 'application/x-ndjson',
-				'Content-Encoding': 'gzip',
+		const req = https.request(
+			url,
+			{
+				method: 'POST',
+				timeout: REQUEST_TIMEOUT,
+				agent: false,
+				headers: {
+					Authorization: `Bearer ${secret}`,
+					'Content-Type': 'application/x-ndjson',
+					'Content-Encoding': 'gzip',
+				},
 			},
-		});
+			(res) => {
+				res.on('data', (chunk) => console.log('Received ping', chunk));
+			},
+		);
 
 		// Since we haven't sent the request body yet, and never will,the
 		// only reason for the server to prematurely respond is to
