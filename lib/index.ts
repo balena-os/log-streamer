@@ -1,4 +1,4 @@
-import * as https from 'https';
+import * as https from 'http';
 import { promisify } from 'util';
 import * as zlib from 'zlib';
 import { pipeline } from 'stream';
@@ -23,8 +23,10 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 				agent: false,
 				headers: {
 					Authorization: `Bearer ${secret}`,
+					Host: 'api.balena-staging.com',
 					'Content-Type': 'application/x-ndjson',
 					'Content-Encoding': 'gzip',
+					'X-Forwarded-Proto': 'https',
 				},
 			},
 			(res) => {
@@ -129,16 +131,14 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 }
 
 const WAIT = parseInt(process.env.WAIT || '1000', 10);
-
-const UUID = '43aebb844b9240f6b8702ecadb846f81';
-const SECRET = 'D75GGljZ1dA3GrInZIA22p3zYZZH6Faf';
-const BACKEND = 'https://api.balena-staging.com';
-// const UUID = '112d2bcc8bb14ee3bec5e76874eef091';
-// const SECRET = 'aS8SPCdTN1DyYmRBcSlzY6K2T04CHJxN';
-// const BACKEND = 'https://api.balena-cloud.com';
+const UUID = process.env.UUID || '43aebb844b9240f6b8702ecadb846f81';
+const SECRET = process.env.SECRET || 'D75GGljZ1dA3GrInZIA22p3zYZZH6Faf';
+const BACKEND = process.env.BACKEND || 'http://localhost:8000';
 const LOG_STREAM = `${BACKEND}/device/v2/${UUID}/log-stream`;
 (async () => {
 	const log = await Logger(LOG_STREAM, SECRET);
+
+	console.log(LOG_STREAM);
 
 	let count = 0;
 	while (true) {

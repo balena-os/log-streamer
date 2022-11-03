@@ -76,8 +76,8 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 
 const WAIT = parseInt(process.env.WAIT || '1000', 10);
 //
-const UUID = '43aebb844b9240f6b8702ecadb846f81';
-const SECRET = 'D75GGljZ1dA3GrInZIA22p3zYZZH6Faf';
+const UUID = '843055b86c5272feba7e7274c3c4198f';
+const SECRET = 'd7aeb07399cd50cf05b7bcb94a47527a';
 const BACKEND = 'https://api.balena-staging.com';
 // const UUID = '112d2bcc8bb14ee3bec5e76874eef091';
 // const SECRET = 'aS8SPCdTN1DyYmRBcSlzY6K2T04CHJxN';
