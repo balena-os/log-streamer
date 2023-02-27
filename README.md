@@ -1,6 +1,8 @@
 # Log tester
 
-Test sending logs to the API log-stream
+Test sending logs to the API log-stream.
+
+This is only meant to be used for debugging purposes. Abusing the tool may result in API limits being enforced.
 
 ## Usage
 
