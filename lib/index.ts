@@ -14,7 +14,7 @@ const REQUEST_TIMEOUT = 59 * 1000;
 
 const sleep = promisify(setTimeout);
 export async function Logger(url: string, secret: string): Promise<Logger> {
-	return new Promise(async (resolve, reject) => {
+	return new Promise(async (resolve) => {
 		const req = https.request(
 			url,
 			{
@@ -36,33 +36,27 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 		// only reason for the server to prematurely respond is to
 		// communicate an error. So teardown the connection immediately
 		req.on('response', (res) => {
-			console.error('Received response', res.statusCode);
-			reject(
-				new LoggerError(
-					`Received response from log backend with status code: ${res.statusCode}`,
-				),
+			throw new LoggerError(
+				`Received response from log backend with status code: ${res.statusCode}`,
+				{ cause: res },
 			);
 		});
 		req.on('timeout', () => {
-			console.error('Request timed out');
-			reject(
-				new LoggerError(
-					`Request timed out when trying to connect to the log backend`,
-				),
+			throw new LoggerError(
+				`Request timed out when trying to connect to the log backend`,
 			);
 		});
 		req.on('close', () => {
-			console.error('Request closed');
-			reject(
-				new LoggerError(`Request to the log backend terminated prematurely`),
+			throw new LoggerError(
+				`Request to the log backend terminated prematurely`,
 			);
 		});
 		req.on('error', (cause) => {
-			console.error('Request error', cause);
-			reject(
-				new LoggerError(`Request to the log backend terminated prematurely`, {
+			throw new LoggerError(
+				`Request to the log backend terminated with unknown error`,
+				{
 					cause,
-				}),
+				},
 			);
 		});
 
@@ -78,8 +72,7 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 		pipeline(gzip, req, (cause) => {
 			if (cause) {
 				req.end();
-				console.error('Gzip error', cause);
-				reject(new LoggerError(`Failed to create gzip stream`, { cause }));
+				throw new LoggerError(`Failed to create gzip stream`, { cause });
 			}
 		});
 
@@ -128,27 +121,39 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 	});
 }
 
-const WAIT = parseInt(process.env.WAIT || '1000', 10);
+if (!process.env.UUID) {
+	throw new Error(
+		'Please provide a UUID environment variable with the device identifier',
+	);
+}
+const UUID = process.env.UUID;
 
-const UUID = '43aebb844b9240f6b8702ecadb846f81';
-const SECRET = 'D75GGljZ1dA3GrInZIA22p3zYZZH6Faf';
-const BACKEND = 'https://api.balena-staging.com';
-// const UUID = '112d2bcc8bb14ee3bec5e76874eef091';
-// const SECRET = 'aS8SPCdTN1DyYmRBcSlzY6K2T04CHJxN';
-// const BACKEND = 'https://api.balena-cloud.com';
-const LOG_STREAM = `${BACKEND}/device/v2/${UUID}/log-stream`;
+if (!process.env.API_KEY) {
+	throw new Error(
+		'Please provide an API_KEY environment variable with the device credentials',
+	);
+}
+const API_KEY = process.env.API_KEY;
+
+const API_ENDPOINT = process.env.API_ENDPOINT || 'https://api.balena-cloud.com';
+const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 (async () => {
-	const log = await Logger(LOG_STREAM, SECRET);
+	const log = await Logger(LOG_STREAM, API_KEY);
 
 	let count = 0;
 	while (true) {
-		console.log(`Count: ${count}`);
+		const message = `${new Date().toUTCString()} - Test message No. ${count}. Next message in ${++count}(s)`;
+
+		// Send the same message to the stdout and the backend
+		console.log(message);
 		log({
-			message: `Count: ${count++}`,
+			message,
 			timestamp: Date.now(),
 			isSystem: true,
-			isStdErr: true,
+			isStdErr: false,
 		});
-		await sleep(WAIT);
+
+		// We increase delay in a linear rate
+		await sleep(count * 1000);
 	}
 })();
