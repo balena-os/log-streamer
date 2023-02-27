@@ -1,52 +1,55 @@
 {
-	"name": "log-streamer",
-	"version": "0.1.0",
-	"description": "Test utility for debugging log streaming to the Balena API",
-	"homepage": "https://github.com/balena-os/log-streamer#readme",
-	"private": true,
-	"main": "build/index.js",
-	"types": "build/index.d.ts",
-	"keywords": [
-		"balena",
-		"typescript"
-	],
-	"author": "Balena Inc. <hello@balena.io>",
-	"license": "Apache-2.0",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/balena-os/log-streamer.git"
-	},
-	"bugs": {
-		"url": "https://github.com/balena-os/log-streamer/issues"
-	},
-	"files": [
-		"build/"
-	],
-	"scripts": {
-		"start": "node build/index.js",
-		"dev": "nodemon -w lib/ lib/index.ts",
-		"clean": "rimraf build",
-		"build": "npm run clean && tsc",
-		"lint": "balena-lint --typescript lib tests",
-		"lint-fix": "balena-lint --typescript --fix lib tests",
-		"test:node": "mocha -r ts-node/register --reporter spec tests/**/*.spec.ts",
-		"test": "npm run build && npm run lint && npm run test:node",
-		"test:fast": "npm run build && npm run test:node",
-		"prepack": "npm run build"
-	},
-	"devDependencies": {
-		"@balena/lint": "^5.4.2",
-		"@types/chai": "^4.2.18",
-		"@types/chai-as-promised": "^7.1.4",
-		"@types/mocha": "^8.2.2",
-		"chai": "^4.3.4",
-		"chai-as-promised": "^7.1.1",
-		"husky": "^4.2.5",
-		"lint-staged": "^11.0.0",
-		"mocha": "^8.4.0",
-		"nodemon": "^2.0.20",
-		"rimraf": "^3.0.2",
-		"ts-node": "^10.9.1",
-		"typescript": "4.8"
-	}
+  "name": "log-streamer",
+  "version": "0.1.0",
+  "description": "Test utility for debugging log streaming to the Balena API",
+  "homepage": "https://github.com/balena-os/log-streamer#readme",
+  "private": true,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "keywords": [
+    "balena",
+    "typescript"
+  ],
+  "author": "Balena Inc. <hello@balena.io>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balena-os/log-streamer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/balena-os/log-streamer/issues"
+  },
+  "files": [
+    "build/"
+  ],
+  "scripts": {
+    "start": "node build/index.js",
+    "dev": "nodemon -w lib/ lib/index.ts",
+    "clean": "rimraf build",
+    "build": "npm run clean && tsc",
+    "lint": "balena-lint --typescript lib tests",
+    "lint-fix": "balena-lint --typescript --fix lib tests",
+    "test:node": "mocha -r ts-node/register --reporter spec tests/**/*.spec.ts",
+    "test": "npm run build && npm run lint && npm run test:node",
+    "test:fast": "npm run build && npm run test:node",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@balena/lint": "^5.4.2",
+    "@types/chai": "^4.2.18",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^11.0.0",
+    "mocha": "^8.4.0",
+    "nodemon": "^2.0.20",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "4.8"
+  },
+  "versionist": {
+    "publishedAt": "2023-02-27T21:52:10.154Z"
+  }
 }
