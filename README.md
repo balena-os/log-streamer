@@ -27,5 +27,5 @@ Mon, 27 Feb 2023 21:16:54 GMT - Test message No. 4. Next message in 5(s)
 On a balena device
 
 ```
-balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KEY=$(cat /mnt/boot/config.json | jq -r .deviceApiKey) gh.cr/balena-os/log-streamer
+balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KEY=$(cat /mnt/boot/config.json | jq -r .deviceApiKey) ghcr.io/balena-os/log-streamer
 ```
