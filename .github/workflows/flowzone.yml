@@ -22,5 +22,6 @@ jobs:
     with:
       protect_branch: true
       repo_config: true
+      repo_default_branch: main
       docker_images: |
         ghcr.io/balena-os/log-streamer
