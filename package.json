@@ -1,6 +1,6 @@
 {
   "name": "log-streamer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Test utility for debugging log streaming to the Balena API",
   "homepage": "https://github.com/balena-os/log-streamer#readme",
   "private": true,
@@ -50,6 +50,6 @@
     "typescript": "4.8"
   },
   "versionist": {
-    "publishedAt": "2023-02-27T21:52:10.154Z"
+    "publishedAt": "2023-02-28T14:35:40.816Z"
   }
 }

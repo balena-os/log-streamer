@@ -1,4 +1,16 @@
 - commits:
+    - subject: Allow simulating messages coming from specific services
+      hash: 59bd404151f24e59ec2d0e282b4bd7da7465292f
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Felipe Lalanne
+      nested: []
+  version: 0.2.0
+  title: ""
+  date: 2023-02-28T14:35:40.763Z
+- commits:
     - subject: Flowzonify
       hash: ae79454cf4a926d0317c78b83c98950da463e0d8
       body: ""
