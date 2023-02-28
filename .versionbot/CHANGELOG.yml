@@ -1,4 +1,16 @@
 - commits:
+    - subject: Set flowzone default branch
+      hash: 854b8c6d44c6aeee5ddd3dbcc785cb09744fdf3f
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Felipe Lalanne
+      nested: []
+  version: 0.2.1
+  title: ""
+  date: 2023-02-28T14:56:01.859Z
+- commits:
     - subject: Allow simulating messages coming from specific services
       hash: 59bd404151f24e59ec2d0e282b4bd7da7465292f
       body: ""
