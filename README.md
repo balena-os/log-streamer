@@ -29,3 +29,14 @@ On a balena device
 ```
 balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KEY=$(cat /mnt/boot/config.json | jq -r .deviceApiKey) ghcr.io/balena-os/log-streamer
 ```
+
+You can also simulate messages coming from specific services
+
+```
+# Get the service id
+SERVICE_NAME=<my_service>
+SERVICE_ID=$(balena inspect $(balena ps -qa --filter=name=${SERVICE_NAME}_*) | jq -r '.[].Config.Labels | to_entries[] | select(.key | contains("io.balena.service-id")) | .value')
+
+# Run the tool
+balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KEY=$(cat /mnt/boot/config.json | jq -r .deviceApiKey) -e SERVICE_ID=$SERVICE_ID gh.cr/balena-os/log-streamer
+```

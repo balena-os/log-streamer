@@ -139,19 +139,37 @@ const API_ENDPOINT = process.env.API_ENDPOINT || 'https://api.balena-cloud.com';
 const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 (async () => {
 	const log = await Logger(LOG_STREAM, API_KEY);
+	const serviceIds = process.env.SERVICE_ID
+		? process.env.SERVICE_ID.split(',')
+				.filter((s) => !!s)
+				.map((s) => parseInt(s.trim(), 10))
+		: [];
 
 	let count = 0;
 	while (true) {
-		const message = `${new Date().toUTCString()} - Test message No. ${count}. Next message in ${++count}(s)`;
+		const now = new Date();
+		const message = `${now.toUTCString()} - Test message No. ${count}. Next message in ${++count}(s)`;
 
 		// Send the same message to the stdout and the backend
 		console.log(message);
-		log({
-			message,
-			timestamp: Date.now(),
-			isSystem: true,
-			isStdErr: false,
-		});
+		if (serviceIds.length > 0) {
+			for (const serviceId of serviceIds) {
+				log({
+					message,
+					timestamp: now.valueOf(),
+					serviceId,
+					isSystem: false,
+					isStdErr: false,
+				});
+			}
+		} else {
+			log({
+				message,
+				timestamp: now.valueOf(),
+				isSystem: true,
+				isStdErr: false,
+			});
+		}
 
 		// We increase delay in a linear rate
 		await sleep(count * 1000);
