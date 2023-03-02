@@ -1,4 +1,16 @@
 - commits:
+    - subject: Add initial delay variable
+      hash: 27c08da487cecef0dc8e0d1bf0727ad85dfa2ca7
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Felipe Lalanne
+      nested: []
+  version: 0.3.0
+  title: ""
+  date: 2023-03-02T21:49:26.317Z
+- commits:
     - subject: Set flowzone default branch
       hash: 854b8c6d44c6aeee5ddd3dbcc785cb09744fdf3f
       body: ""
