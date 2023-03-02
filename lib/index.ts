@@ -25,6 +25,7 @@ export async function Logger(url: string, secret: string): Promise<Logger> {
 					Authorization: `Bearer ${secret}`,
 					'Content-Type': 'application/x-ndjson',
 					'Content-Encoding': 'gzip',
+					'Keep-Alive': `timeout=${REQUEST_TIMEOUT / 1000}`,
 				},
 			},
 			(res) => {
@@ -137,6 +138,7 @@ const API_KEY = process.env.API_KEY;
 
 const API_ENDPOINT = process.env.API_ENDPOINT || 'https://api.balena-cloud.com';
 const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
+const INITIAL_DELAY = parseInt(process.env.INITIAL_DELAY || '0', 10);
 (async () => {
 	const log = await Logger(LOG_STREAM, API_KEY);
 	const serviceIds = process.env.SERVICE_ID
@@ -146,9 +148,10 @@ const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 		: [];
 
 	let count = 0;
+	let delay = INITIAL_DELAY;
 	while (true) {
 		const now = new Date();
-		const message = `${now.toUTCString()} - Test message No. ${count}. Next message in ${++count}(s)`;
+		const message = `${now.toUTCString()} - Test message No. ${count++}. Next message in ${++delay}(s)`;
 
 		// Send the same message to the stdout and the backend
 		console.log(message);
@@ -172,6 +175,6 @@ const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 		}
 
 		// We increase delay in a linear rate
-		await sleep(count * 1000);
+		await sleep(delay * 1000);
 	}
 })();
