@@ -40,3 +40,12 @@ SERVICE_ID=$(balena inspect $(balena ps -qa --filter=name=${SERVICE_NAME}_*) | j
 # Run the tool
 balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KEY=$(cat /mnt/boot/config.json | jq -r .deviceApiKey) -e SERVICE_ID=$SERVICE_ID ghcr.io/balena-os/log-streamer
 ```
+
+## Environment Variables
+
+| Name          | Description                                                          | Required | Default Value                |
+| ------------- | -------------------------------------------------------------------- | -------- | ---------------------------- |
+| UUID          | UUID address of the balena device (for instance, from `config.json`) | true     |                              |
+| API_KEY       | Device API key to use for authentication                             | true     |                              |
+| API_ENDPOINT  | URL to use for testing                                               | false    | https://api.balena-cloud.com |
+| INITIAL_DELAY | Delay in seconds to start the linear increase                        | false    | 0                            |
