@@ -139,6 +139,7 @@ const API_KEY = process.env.API_KEY;
 const API_ENDPOINT = process.env.API_ENDPOINT || 'https://api.balena-cloud.com';
 const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 const INITIAL_DELAY = parseInt(process.env.INITIAL_DELAY || '0', 10);
+const DELTA_DELAY = parseInt(process.env.DELTA_DELAY || '1', 10);
 
 // Register signal handlers before starting the supervisor service
 process.on('SIGTERM', () => {
@@ -167,10 +168,12 @@ process.on('SIGINT', () => {
 		: [];
 
 	let count = 0;
-	let delay = INITIAL_DELAY;
+
+	// Do not allow to set the the starting delay to less than 1 second
+	let delay = Math.max(1, INITIAL_DELAY + DELTA_DELAY);
 	while (true) {
 		const now = new Date();
-		const message = `${now.toUTCString()} - Test message No. ${count++}. Next message in ${++delay}(s)`;
+		const message = `${now.toUTCString()} - Test message No. ${count++}. Next message in ${delay}(s)`;
 
 		// Send the same message to the stdout and the backend
 		console.log(message);
@@ -193,7 +196,9 @@ process.on('SIGINT', () => {
 			});
 		}
 
-		// We increase delay in a linear rate
 		await sleep(delay * 1000);
+
+		// We increase delay in a linear rate by DELAY_DELTA seconds
+		delay = delay + DELTA_DELAY;
 	}
 })();

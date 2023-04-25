@@ -49,3 +49,4 @@ balena run --rm -ti -e UUID=$(cat /mnt/boot/config.json | jq -r .uuid) -e API_KE
 | API_KEY       | Device API key to use for authentication                             | true     |                              |
 | API_ENDPOINT  | URL to use for testing                                               | false    | https://api.balena-cloud.com |
 | INITIAL_DELAY | Delay in seconds to start the linear increase                        | false    | 0                            |
+| DELTA_DELAY   | Number of seconds to increase between iterations                     | false    | 1                            |
