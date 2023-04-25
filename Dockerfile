@@ -29,4 +29,4 @@ RUN JOBS=MAX npm install --omit=dev --unsafe-perm && npm cache verify && rm -rf 
 COPY --from=build /usr/src/app/build/ ./build
 
 # server.js will run when container starts up on the device
-CMD ["npm", "start"]
+CMD ["node", "build/index.js"]
