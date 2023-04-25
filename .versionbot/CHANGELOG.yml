@@ -1,4 +1,20 @@
 - commits:
+    - subject: Do not use `npm start` as CMD
+      hash: a5af6e040982982a9e8f4171ff02f523e21690aa
+      body: |
+        Instead execute the script directly using `node`. Using `npm` leads to
+        additional connections that create distracting results.
+
+        This also adds code to handle signals that no longer are handled by npm
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Felipe Lalanne
+      nested: []
+  version: 0.3.1
+  title: ""
+  date: 2023-04-25T21:52:59.019Z
+- commits:
     - subject: Add initial delay variable
       hash: 27c08da487cecef0dc8e0d1bf0727ad85dfa2ca7
       body: ""
