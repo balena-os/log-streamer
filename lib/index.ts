@@ -139,6 +139,25 @@ const API_KEY = process.env.API_KEY;
 const API_ENDPOINT = process.env.API_ENDPOINT || 'https://api.balena-cloud.com';
 const LOG_STREAM = `${API_ENDPOINT}/device/v2/${UUID}/log-stream`;
 const INITIAL_DELAY = parseInt(process.env.INITIAL_DELAY || '0', 10);
+
+// Register signal handlers before starting the supervisor service
+process.on('SIGTERM', () => {
+	console.info('Received SIGTERM. Exiting.');
+
+	// This is standard exit code to indicate a graceful shutdown
+	// it equals 128 + 15 (the signal code)
+	process.exit(143);
+});
+
+// Register signal handlers before starting the supervisor service
+process.on('SIGINT', () => {
+	console.info('Received SIGINT. Exiting.');
+
+	// This is standard exit code to indicate a graceful shutdown
+	// it equals 128 + 2 (the signal code)
+	process.exit(130);
+});
+
 (async () => {
 	const log = await Logger(LOG_STREAM, API_KEY);
 	const serviceIds = process.env.SERVICE_ID
