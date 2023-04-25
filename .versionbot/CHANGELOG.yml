@@ -1,4 +1,18 @@
 - commits:
+    - subject: Add DELTA_DELAY configuration variable
+      hash: 8cc2f3e07bad1cf454fed562f1702fa86ecf43e3
+      body: |
+        Allows to configure the jump in seconds between iterations. If set to 0
+        the program will use a constant value set by INITIAL_DELAY
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Felipe Lalanne
+      nested: []
+  version: 0.4.0
+  title: ""
+  date: 2023-04-25T22:46:27.429Z
+- commits:
     - subject: Do not use `npm start` as CMD
       hash: a5af6e040982982a9e8f4171ff02f523e21690aa
       body: |
