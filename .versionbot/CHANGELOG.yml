@@ -1,4 +1,21 @@
 - commits:
+    - subject: Remove repo config from flowzone.yml
+      hash: cdec9d6ee3002f6c6126f5feb956365389b83cb9
+      body: |
+        This functionality is being deprecated in Flowzone.
+
+        See: https://github.com/product-os/flowzone/pull/833
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+      nested: []
+  version: 0.4.1
+  title: ""
+  date: 2023-12-19T22:00:18.861Z
+- commits:
     - subject: Add DELTA_DELAY configuration variable
       hash: 8cc2f3e07bad1cf454fed562f1702fa86ecf43e3
       body: |
