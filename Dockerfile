@@ -1,4 +1,4 @@
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 
 # Defines our working directory in container
 WORKDIR /usr/src/app
@@ -14,7 +14,7 @@ COPY . ./
 # # Build dist
 RUN npm run build
 
-FROM node:18-alpine as prod
+FROM node:20-alpine as prod
 
 WORKDIR /usr/src/app
 
