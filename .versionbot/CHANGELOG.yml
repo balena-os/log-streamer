@@ -1,4 +1,15 @@
 - commits:
+    - subject: Explicitly set GH_TOKEN permissions
+      hash: abd5fadbbb02268a6062a10d3bf0bc51828d7a24
+      body: ""
+      footer:
+        change-type: patch
+      author: Anton Belodedenko
+      nested: []
+  version: 0.4.3
+  title: ""
+  date: 2024-11-18T20:05:14.068Z
+- commits:
     - subject: Remove deprecated Flowzone setting
       hash: 5fa4ef4b4c84439190d0c13461e1967798bf1e3c
       body: ""
